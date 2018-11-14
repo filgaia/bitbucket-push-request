@@ -20,8 +20,7 @@ const menus = {
       
       --jira, -j ....... the jira version
       --message, -m .... message for the commit and pull request
-      --dest, -d ....... destination branch. by default <master>
-      --origin, -o ..... origin branch`,
+      --dest, -d ....... destination branch. by default <master>`,
 }
 
 module.exports = (args) => {

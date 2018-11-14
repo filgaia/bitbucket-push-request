@@ -5,6 +5,7 @@
     },
     "destination": "<destination branch>",
     "fork": "<User fork>",
+    "gitPath": "./",
     "project": "<Bitbucket project name>",
     "repository": "<Repository name>",
     "reviewers": [

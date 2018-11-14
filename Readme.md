@@ -29,7 +29,7 @@ For the use, you need to do the following:
 
 ## Available Commands
 
-- `full` - push, pull-request and slack notification [NOT WORKING YET]
+- `full` - push, pull-request and slack notification
 - `pull-request` - create a pull request
 - `forks` - show the forks for the repository
 
