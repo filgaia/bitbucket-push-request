@@ -1,4 +1,7 @@
+// @vendors
 const minimist = require('minimist')
+// @utils
+const error = require('./utils/error')
 // @root
 var path = require('path');
 global.appRoot = path.resolve(__dirname);
@@ -33,12 +36,16 @@ module.exports = () => {
             require('./cmds/version')(args)
             break
 
+        case 'slack':
+            require('./cmds/slack')(args)
+            break
+
         case 'help':
             require('./cmds/help')(args)
             break
 
         default:
-            console.error(`"${cmd}" is not a valid command!`)
+            error(`"${cmd}" is not a valid command!`, true)
             break
     }
 }

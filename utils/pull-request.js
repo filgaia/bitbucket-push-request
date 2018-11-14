@@ -3,21 +3,21 @@ const axios = require('axios');
 // @config
 const config = require(appRoot + '/bb-pr-config.json')
 
-module.exports = async (dest) => {
-    const destination = dest || config.destination;
+module.exports = async (params) => {
+    const destination = params.dest || config.destination;
 
     const results = await axios({
         method: 'post',
         url: config.url + '/rest/api/1.0/projects/' + config.project + '/repos/' + config.repository + '/pull-requests',
         auth: config.auth,
         data: {
-            title: 'Talking Nerdy',
+            title: params.jira + ' - ' + params.message,
             description: 'It’s a kludge, but put the tuple from the database in the cache.',
             state: 'OPEN',
             open: true,
             closed: false,
             fromRef: {
-                id: "refs/heads/release-11.01",
+                id: "refs/heads/" + params.origin,
                 repository: {
                     slug: config.repository,
                     name: null,

@@ -32,3 +32,11 @@ For the use, you need to do the following:
 - `full` - push, pull-request and slack notification [NOT WORKING YET]
 - `pull-request` - create a pull request
 - `forks` - show the forks for the repository
+
+## Examples of use
+
+- `push pull-request -j <Code> -m <My title> -o <myBranch>`
+
+## Requirements
+
+- You need at least *Node 8.0* to run it

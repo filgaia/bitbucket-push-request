@@ -14,5 +14,6 @@
             }
         }
     ],
+    "slackHook": "<Slack hook url>",
     "url": "<Bitbucket url>"
 }
