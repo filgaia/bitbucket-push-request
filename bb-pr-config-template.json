@@ -1,0 +1,18 @@
+{
+    "auth": {
+        "username": "<username>",
+        "password": "<password>"
+    },
+    "destination": "<destination branch>",
+    "fork": "<User fork>",
+    "project": "<Bitbucket project name>",
+    "repository": "<Repository name>",
+    "reviewers": [
+        {
+            "user": {
+                "name": "<Reviewer username, as many as needed>"
+            }
+        }
+    ],
+    "url": "<Bitbucket url>"
+}

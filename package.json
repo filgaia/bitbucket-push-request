@@ -1,0 +1,28 @@
+{
+  "name": "bitbucket-push-request",
+  "version": "1.0.0",
+  "description": "Module to create a push, pull request in bitbucket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bitbucket",
+    "git",
+    "nodejs"
+  ],
+  "author": "Filgaia",
+  "license": "ISC",
+  "bin": {
+    "push": "bin/push"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.0",
+    "ora": "^3.0.0"
+  }
+}

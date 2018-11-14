@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+test/coverage/
+.idea/
+.DS_Store
+.vscode
+.vs
+__tests__/coverage/
+package-lock.json
+bb-pr-config.json
