@@ -1,5 +1,5 @@
 const menus = {
-    main: `
+  main: `
       push [command] <options>
   
       full ............... push, pull-request and slack notification
@@ -9,7 +9,7 @@ const menus = {
       version ............ show package version
       help ............... show help menu for a command`,
 
-    full: `
+  full: `
       push full <options>
   
       --jira, -j ......... the jira version
@@ -17,19 +17,24 @@ const menus = {
       --dest, -d ......... destination branch. By default destination in config file 
       --newVersion, -n ... new version for the file`,
 
-    slack: `
+  slack: `
       push slack <options>
   
       --message, -m ...... message for the commit and pull request`,
 
-    'version-update': `
+  tag: `
+      push tag <options>
+  
+      --name, -n ...... name of the tag`,
+
+  'version-update': `
       push version-update <options>
   
       --jira, -j ......... the jira version
       --path, -p ......... path of file. By default gitPath in config file
       --newVersion, -n ... new version for the file`,
 
-    'pull-request': `
+  'pull-request': `
       push pull-request <options>
       
       --jira, -j ......... the jira version
@@ -39,9 +44,9 @@ const menus = {
 }
 
 module.exports = (args) => {
-    const subCmd = args._[0] === 'help'
-        ? args._[1]
-        : args._[0]
+  const subCmd = args._[0] === 'help'
+    ? args._[1]
+    : args._[0]
 
-    console.log(menus[subCmd] || menus.main)
+  console.log(menus[subCmd] || menus.main)
 }

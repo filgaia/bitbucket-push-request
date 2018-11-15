@@ -13,7 +13,8 @@ const pushChanges = async (git, jira, finish) => {
     // Handlers
     const branchLocalHandler = async (error, summary) => {
         if (summary.branches[jira]) {
-            git.deleteLocalBranch(jira, () => console.log(`- Deleted local branch ${jira}...`)).checkoutLocalBranch(jira, () => console.log(`- Checked out branch ${jira}...`))
+            git.deleteLocalBranch(jira, () => console.log(`- Deleted local branch ${jira}...`))
+                .checkoutLocalBranch(jira, () => console.log(`- Checked out branch ${jira}...`))
                 .add('./*', () => console.log(`- Added the files..............`))
                 .commit(`${jira} - Update package.json version`, () => console.log(`- Committed files..............`))
                 .push(['-u', config.remote, jira], { '--no-verify': null, '--force': null }, finish);

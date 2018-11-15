@@ -42,6 +42,10 @@ module.exports = () => {
             require('./cmds/slack')(args)
             break
 
+        case 'tag':
+            require('./cmds/tag')(args)
+            break
+
         case 'version-update':
             require('./cmds/version-update')(args)
             break

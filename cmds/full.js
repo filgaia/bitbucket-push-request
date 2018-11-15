@@ -65,7 +65,7 @@ module.exports = async (args) => {
 
             console.log(`Calling the Slack for PR #${response.id}...`);
 
-            const slackMessage = `A new *Pull Request* for <${config.jira}${jira}|Jira ${jira}> by *${config.auth.username}* have been created!`
+            const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> by *${config.auth.username}* have been created!`
             const attachments = [
                 {
                     color: 'good',
