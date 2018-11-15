@@ -12,7 +12,7 @@ module.exports = async (params) => {
         auth: config.auth,
         data: {
             title: params.jira + ' - ' + params.message,
-            description: 'It’s a kludge, but put the tuple from the database in the cache.',
+            description: 'Jira: ' + config.jira + params.jira,
             state: 'OPEN',
             open: true,
             closed: false,

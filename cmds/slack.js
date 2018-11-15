@@ -3,7 +3,8 @@ const ora = require('ora');
 const getMessage = require('../utils/hook');
 const chalk = require('chalk');
 
-module.exports = async () => {
+module.exports = async (args) => {
+    const message = args.message || args.m || 'Hello World from the app!!';
     const spinner = ora().start();
 
     try {
@@ -11,7 +12,7 @@ module.exports = async () => {
         console.log(chalk.cyanBright(`Testing communication with Slack:`));
         console.log(chalk.cyanBright(`================================`));
 
-        await getMessage('Hello World from the app!!');
+        await getMessage(message);
 
         spinner.stop();
 

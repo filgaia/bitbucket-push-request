@@ -15,6 +15,7 @@ module.exports = async (args) => {
         const jira = args.jira || args.j;
         const message = args.message || args.m;
         const dest = args.dest || args.d;
+        const origin = args.origin || args.o || jira;
 
         console.log(`\n`);
         console.log(chalk.cyanBright(`Creating pull-request in ${config.repository}:`));
@@ -25,7 +26,7 @@ module.exports = async (args) => {
             dest,
             jira,
             message,
-            origin: jira
+            origin
         });
 
         spinner.stop();

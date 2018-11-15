@@ -32,10 +32,14 @@ For the use, you need to do the following:
 - `full` - push, pull-request and slack notification
 - `pull-request` - create a pull request
 - `forks` - show the forks for the repository
+- `slack` - Send a message to slack hook
+- `version-update` - Update the version in the *package.json*
 
 ## Examples of use
 
-- `push pull-request -j <Code> -m <My title> -o <myBranch>`
+- `push pull-request -j <code> -m <my title> -o <myBranch> -d <destinationBranch>`
+- `push full -j <jira> -m <message> -n <version>`
+- `push version-update -n <version> -p <path> -j <code>`
 
 ## Requirements
 

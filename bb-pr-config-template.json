@@ -3,10 +3,12 @@
         "username": "<username>",
         "password": "<password>"
     },
-    "destination": "<destination branch>",
+    "destination": "master",
     "fork": "<User fork>",
     "gitPath": "./",
+    "jira": "<Jira url>",
     "project": "<Bitbucket project name>",
+    "remote": "origin",
     "repository": "<Repository name>",
     "reviewers": [
         {

@@ -1,4 +1,6 @@
+const chalk = require('chalk');
+
 module.exports = (message, exit) => {
-    console.error(message)
-    exit && process.exit(1)
+    console.error(chalk.red(message));
+    exit && process.exit(1);
 }

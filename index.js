@@ -5,6 +5,12 @@ const error = require('./utils/error')
 // @root
 var path = require('path');
 global.appRoot = path.resolve(__dirname);
+// @config
+try {
+    require(appRoot + '/bb-pr-config.json')
+} catch (err) {
+    error(`"bb-pr-config.json" file not found!`, true)
+}
 
 module.exports = () => {
     const args = minimist(process.argv.slice(2))
@@ -32,12 +38,16 @@ module.exports = () => {
             require('./cmds/forks')(args)
             break
 
-        case 'version':
-            require('./cmds/version')(args)
-            break
-
         case 'slack':
             require('./cmds/slack')(args)
+            break
+
+        case 'version-update':
+            require('./cmds/version-update')(args)
+            break
+
+        case 'version':
+            require('./cmds/version')(args)
             break
 
         case 'help':
