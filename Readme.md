@@ -4,6 +4,11 @@ Node module to make a pull request for bitbucket after doing some changes.
 
 This project was based in [Creating A Real-World CLI App With Node](https://timber.io/blog/creating-a-real-world-cli-app-with-node/).
 
+For more information of **Bitbucket Rest API** you can go to the [Documentation](https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/).
+
+If you wanna create the **Slack Notification** you can go to the [Webhook Incoming Documentation](https://api.slack.com/incoming-webhooks)
+
+
 This app was built for [NodeJS](https://nodejs.org/es/).
 
 ## How to run it
@@ -30,7 +35,7 @@ For the use, you need to do the following:
 ## Available Commands
 
 - `full` - push, pull-request and slack notification
-- `pull-request` - create a pull request
+- `request` - create a pull request
 - `forks` - show the forks for the repository
 - `slack` - send a message to slack hook
 - `tag` - create a tag in remote
@@ -38,9 +43,10 @@ For the use, you need to do the following:
 
 ## Examples of use
 
-- `push pull-request -j <code> -m <my title> -o <myBranch> -d <destinationBranch>`
-- `push full -j <jira> -m <message> -n <version>`
+- `push request -j <code> -m <my title> -o <myBranch> -d <destinationBranch>`
+- `push full -j <code> -m <message> -n <version>`
 - `push version-update -n <version> -p <path> -j <code>`
+- `push lib-update -n <version> -j <code> -t <feature>`
 - `push tag -n <tagname>`
 
 ## Requirements

@@ -4,11 +4,13 @@ const axios = require('axios');
 const config = require(appRoot + '/bb-pr-config.json')
 
 module.exports = async (params) => {
-    const destination = params.dest || config.destination;
+    const destination = params.destination;
+    const repository = params.repository || config.repository;
+    const fromProject = params.forked ? config.fork : config.project
 
     const results = await axios({
         method: 'post',
-        url: config.url + '/rest/api/1.0/projects/' + config.project + '/repos/' + config.repository + '/pull-requests',
+        url: config.url + '/rest/api/1.0/projects/' + config.project + '/repos/' + repository + '/pull-requests',
         auth: config.auth,
         data: {
             title: params.jira + ' - ' + params.message,
@@ -19,17 +21,17 @@ module.exports = async (params) => {
             fromRef: {
                 id: "refs/heads/" + params.origin,
                 repository: {
-                    slug: config.repository,
+                    slug: repository,
                     name: null,
                     project: {
-                        key: config.fork
+                        key: fromProject
                     }
                 }
             },
             toRef: {
                 id: "refs/heads/" + destination,
                 repository: {
-                    slug: config.repository,
+                    slug: repository,
                     name: null,
                     project: {
                         key: config.project

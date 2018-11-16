@@ -3,46 +3,54 @@ const ora = require('ora');
 const get = require('lodash/get');
 const chalk = require('chalk');
 // @utils
-const setPullRequest = require('../utils/pull-request');
+const setPullRequest = require('../utils/request');
 const getMessage = require('../utils/hook');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
+const error = require('../utils/error');
+const help = require('../utils/help');
 
 module.exports = async (args) => {
-    let spinner = null;
+    let spinner = ora();
 
     try {
         const jira = args.jira || args.j;
         const message = args.message || args.m;
-        const dest = args.dest || args.d;
+        const destination = args.dest || args.d || config.destination;
         const origin = args.origin || args.o || jira;
+
+        // Error exit
+        if (!jira || !message || !destination) {
+            console.log(help['request']);
+
+            error(`Not all required params where given!`, true);
+        }
 
         console.log(`\n`);
         console.log(chalk.cyanBright(`Creating pull-request in ${config.repository}:`));
         console.log(chalk.cyanBright(`=================================`));
 
-        spinner = ora().start();
+        spinner.start();
+
         const response = await setPullRequest({
-            dest,
+            destination,
             jira,
             message,
-            origin
+            origin,
+            forked: true
         });
-
-        spinner.stop();
 
         console.log(`Calling the Slack for PR #${response.id}...`);
 
-        const slackMessage = `A new *Pull Request* created by *${config.auth.username}* have been created!`
+        const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> have been created!`
         const attachments = [
             {
                 color: 'good',
+                footer: config.auth.username,
                 title: `Merge Request #${response.id} - ${jira}`,
                 title_link: `${config.url}/projects/${config.project}/repos/${config.repository}/pull-requests/${response.id}/overview`
             }
         ];
-
-        spinner = ora().start();
 
         await getMessage(slackMessage, attachments);
 

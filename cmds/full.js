@@ -4,11 +4,14 @@ const get = require('lodash/get');
 const chalk = require('chalk');
 const simpleGit = require('simple-git');
 // @utils
-const setPullRequest = require('../utils/pull-request');
+const setPullRequest = require('../utils/request');
 const getMessage = require('../utils/hook');
 const getFile = require('../utils/version-update');
+const getLibFile = require('../utils/lib-update');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
+const error = require('../utils/error');
+const help = require('../utils/help');
 
 module.exports = async (args) => {
     let spinner = null;
@@ -16,11 +19,25 @@ module.exports = async (args) => {
     try {
         const jira = args.jira || args.j;
         const message = args.message || args.m;
-        const dest = args.dest || args.d;
         const version = args.newVersion || args.n;
+        const type = args.type || args.t || config.parentType;
+        const destination = args.dest || args.d || config.destination;
+        const parentDestination = args.parentDestination || args.pd || config.parentDestination;
+        const path = config.gitPath;
+        const parentPath = config.parentPath;
+        const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
+        const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> by *${config.auth.username}* have been created!`
+        const attachments = [];
 
-        const gitDir = config.gitPath;
-        const git = simpleGit(gitDir);
+        // Error exit
+        if (!jira || !message || !version) {
+            console.log(help['full']);
+
+            error(`Not all required params where given!`, true);
+        }
+
+        const git = simpleGit(path);
+        const gitParent = simpleGit(parentPath);
 
         let commitHash = null;
 
@@ -44,41 +61,77 @@ module.exports = async (args) => {
             commitHash = get(response, 'commit');
 
             getFile({
-                finish,
+                finish: finishRepository,
                 git,
                 jira,
                 newBranch: false,
+                path,
                 push: !!jira,
                 version
             });
         };
 
-        const finish = async () => {
-            console.log(`- Pushed changes..............`);
+        const finish = async (dest, origin, repository, forked) => {
+            console.log(`- Pushed changes ${repository}..............`);
 
-            const response = await setPullRequest({
-                dest,
-                jira,
-                message,
-                origin: jira
-            });
+            try {
+                const response = await setPullRequest({
+                    destination: dest,
+                    jira,
+                    message,
+                    origin,
+                    repository,
+                    forked
+                });
 
-            console.log(`Calling the Slack for PR #${response.id}...`);
-
-            const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> by *${config.auth.username}* have been created!`
-            const attachments = [
-                {
+                attachments.push({
                     color: 'good',
-                    title: `Merge Request #${response.id} - ${config.repository}`,
-                    title_link: `${config.url}/projects/${config.project}/repos/${config.repository}/pull-requests/${response.id}/overview`
+                    title: `Merge Request #${response.id} - ${repository}`,
+                    title_link: `${config.url}/projects/${config.project}/repos/${repository}/pull-requests/${response.id}/overview`
+                });
+
+                if (parentPath && attachments.length === 2) {
+                    console.log(`Calling the Slack for PRs.....`);
+
+                    await getMessage(slackMessage, attachments);
+
+                    spinner.stop();
+
+                    console.log(`Operation Completed!!!`);
+                } else if (!parentPath) {
+                    console.log(`Calling the Slack for PRs.....`);
+
+                    await getMessage(slackMessage, attachments);
+
+                    spinner.stop();
+
+                    console.log(`Operation Completed!!!`);
                 }
-            ];
+            } catch (err) {
+                spinner.stop();
 
-            await getMessage(slackMessage, attachments);
+                console.log(chalk.red(`Errors:`));
+                console.log(chalk.red(`=======`));
 
-            spinner.stop();
+                const data = get(err, 'response.data.errors');
 
-            console.log(`Operation Completed!!!`);
+                if (data) {
+                    data.forEach((i) => {
+                        console.log(get(i, 'message'));
+                    });
+                }
+                else {
+                    console.error(err);
+                }
+            }
+        };
+
+        const finishRepository = () => {
+            finish(destination, jira, config.repository, true);
+        };
+
+        const finishParent = () => {
+            finish(parentDestination, parentBranch, config.parentRepo, false);
         };
 
         console.log(`\n`);
@@ -87,7 +140,22 @@ module.exports = async (args) => {
 
         spinner = ora().start();
 
+        // Updating the changes for repository
         git.branchLocal(branchLocalHandler);
+
+        // Updating the changes for parent
+        if (parentPath) {
+            getLibFile({
+                finish: finishParent,
+                branch: parentBranch,
+                git: gitParent,
+                jira,
+                message,
+                path: parentPath,
+                type,
+                version
+            });
+        }
     } catch (err) {
         spinner.stop();
 

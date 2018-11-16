@@ -30,8 +30,8 @@ module.exports = () => {
             require('./cmds/full')(args)
             break
 
-        case 'pull-request':
-            require('./cmds/pull-request')(args)
+        case 'request':
+            require('./cmds/request')(args)
             break
 
         case 'forks':
@@ -48,6 +48,10 @@ module.exports = () => {
 
         case 'version-update':
             require('./cmds/version-update')(args)
+            break
+
+        case 'lib-update':
+            require('./cmds/lib-update')(args)
             break
 
         case 'version':

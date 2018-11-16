@@ -1,0 +1,59 @@
+module.exports = {
+    main: `
+        push [command] <options>
+    
+        full ............... push, pull-request and slack notification
+        request ............ create a pull request
+        forks .............. show your forks for the repository
+        lib-update ......... Update the dependency in the parent app
+        slack .............. test your slack connection
+        tag ................ create a tag with slack notification
+        version-update ..... update the version in package.json
+        version ............ show package version
+        help ............... show help menu for a command`,
+
+    full: `
+        push full <options>
+    
+        --jira, -j ......... the jira version
+        --message, -m ...... message for the commit and pull request
+        --dest, -d ......... destination branch. By default destination in config file 
+        --branch, -b ....... name of the branch. By default it uses a convention
+        --type, -t ......... type of feature to update
+        --newVersion, -n ... new version for the file`,
+
+    slack: `
+        push slack <options>
+    
+        --message, -m ...... message for the commit and pull request`,
+
+    tag: `
+        push tag <options>
+    
+        --name, -n ........ name of the tag
+        --remote, -r ...... name of the remote. By default the config remote`,
+
+    request: `
+        push request <options>
+        
+        --jira, -j ......... the jira version
+        --message, -m ...... message for the commit and pull request
+        --origin, -o ....... origin branch. By default jira parameter
+        --dest, -d ......... destination branch. by default destination in config file`,
+
+    'lib-update': `
+        push lib-update <options>
+    
+        --jira, -j ......... the jira version
+        --branch, -b ....... name of the branch. By default it uses a convention
+        --dest, -d ......... destination branch. by default parentDestination in config file
+        --type, -t ......... type of feature to update
+        --newVersion, -n ... new version for the file`,
+
+    'version-update': `
+        push version-update <options>
+    
+        --jira, -j ......... the jira version
+        --path, -p ......... path of file. By default gitPath in config file
+        --newVersion, -n ... new version for the file`
+}
