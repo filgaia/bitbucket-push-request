@@ -93,7 +93,7 @@ module.exports = async (args) => {
                 if (parentPath && attachments.length === 2) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    // await getMessage(slackMessage, attachments);
+                    await getMessage(slackMessage, attachments);
 
                     spinner.stop();
 
@@ -101,7 +101,7 @@ module.exports = async (args) => {
                 } else if (!parentPath) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    // await getMessage(slackMessage, attachments);
+                    await getMessage(slackMessage, attachments);
 
                     spinner.stop();
 
