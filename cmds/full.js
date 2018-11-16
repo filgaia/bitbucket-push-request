@@ -14,7 +14,7 @@ const error = require('../utils/error');
 const help = require('../utils/help');
 
 module.exports = async (args) => {
-    let spinner = null;
+    let spinner = ora();
 
     try {
         const jira = args.jira || args.j;
@@ -138,7 +138,7 @@ module.exports = async (args) => {
         console.log(chalk.cyanBright(`Creating a full push:`));
         console.log(chalk.cyanBright(`=====================`));
 
-        spinner = ora().start();
+        spinner.start();
 
         // Updating the changes for repository
         git.branchLocal(branchLocalHandler);
