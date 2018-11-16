@@ -44,7 +44,7 @@ module.exports = async (args) => {
         // Handlers
         const branchLocalHandler = (error, summary) => {
             if (summary.branches[jira]) {
-                git.deleteLocalBranch(jira, () => console.log(`- Deleted local branch ${jira}...`))
+                git.branch(['-D', jira], () => console.log(`- Deleted local branch ${jira}...`))
                     .checkoutLocalBranch(jira, () => console.log(`- Checked out branch ${jira}...`))
                     .add('./*', () => console.log(`- Added the files..............`))
                     .commit(`${jira} - ${message}`, commitHandler);
@@ -93,7 +93,7 @@ module.exports = async (args) => {
                 if (parentPath && attachments.length === 2) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    await getMessage(slackMessage, attachments);
+                    // await getMessage(slackMessage, attachments);
 
                     spinner.stop();
 
@@ -101,7 +101,7 @@ module.exports = async (args) => {
                 } else if (!parentPath) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    await getMessage(slackMessage, attachments);
+                    // await getMessage(slackMessage, attachments);
 
                     spinner.stop();
 

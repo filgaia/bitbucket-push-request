@@ -15,7 +15,7 @@ const pushChanges = (git, jira, finish) => {
     // Handlers
     const branchLocalHandler = (error, summary) => {
         if (summary.branches[jira]) {
-            git.deleteLocalBranch(jira, () => console.log(`- Deleted local branch ${jira}...`))
+            git.branch(['-D', jira], () => console.log(`- Deleted local branch ${jira}...`))
                 .checkoutLocalBranch(jira, () => {
                     console.log(`- Checked out branch ${jira}...`);
                     pushCurrentChanges(git, jira, finish);

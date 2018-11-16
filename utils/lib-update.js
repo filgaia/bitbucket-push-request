@@ -28,7 +28,7 @@ const pushChanges = async (git, jira, branch, message, finish) => {
         }
 
         if (summary.branches[branch]) {
-            git.deleteLocalBranch(branch, (err, response) => {
+            git.branch(['-D', branch], (err, response) => {
                 console.log(`- Deleted local branch ${branch}...`);
                 deleteHandler(err, response);
             });

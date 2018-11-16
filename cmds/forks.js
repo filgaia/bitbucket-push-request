@@ -24,6 +24,15 @@ module.exports = async () => {
         console.log(chalk.red(`Errors:`));
         console.log(chalk.red(`=======`));
 
-        console.error(err);
+        const data = get(err, 'response.data.errors');
+
+        if (data) {
+            data.forEach((i) => {
+                console.log(get(i, 'message'));
+            });
+        }
+        else {
+            console.error(err);
+        }
     }
 }
