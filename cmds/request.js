@@ -5,10 +5,10 @@ const chalk = require('chalk');
 // @utils
 const setPullRequest = require('../utils/request');
 const getMessage = require('../utils/hook');
-// @config
-const config = require(appRoot + '/bb-pr-config.json');
 const error = require('../utils/error');
 const help = require('../utils/help');
+// @config
+const config = require(appRoot + '/bb-pr-config.json');
 
 module.exports = async (args) => {
     let spinner = ora();

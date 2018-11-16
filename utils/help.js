@@ -30,7 +30,7 @@ module.exports = {
     tag: `
         push tag <options>
     
-        --name, -n ........ name of the tag
+        --dest, -d ......... destination branch. by default destination in config file
         --remote, -r ...... name of the remote. By default the config remote`,
 
     request: `

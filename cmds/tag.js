@@ -7,7 +7,6 @@ const simpleGit = require('simple-git');
 const getTag = require('../utils/tag');
 const getMessage = require('../utils/hook');
 const error = require('../utils/error');
-const help = require('../utils/help');
 // @config
 const config = require(appRoot + '/bb-pr-config.json')
 
@@ -15,15 +14,9 @@ module.exports = async (args) => {
     let spinner = ora();
 
     try {
-        const name = args.name || args.n;
-        const remote = args.remote || args.r || config.remote;
-
-        // Error exit
-        if (!name || !remote) {
-            console.log(help['tag']);
-
-            error(`Not all required params where given!`, true);
-        }
+        const remote = args.remote || args.r || 'upstream';
+        const destination = args.dest || args.d || config.destination;
+        const path = config.gitPath;
 
         const gitDir = config.gitPath;
         const git = simpleGit(gitDir);
@@ -33,6 +26,13 @@ module.exports = async (args) => {
         console.log(chalk.cyanBright(`=============`));
 
         spinner.start();
+
+        const errorHandler = (err) => {
+            if (err) {
+                spinner.stop();
+                error(err, true);
+            }
+        };
 
         const handler = async (error) => {
             spinner.stop();
@@ -57,10 +57,12 @@ module.exports = async (args) => {
         }
 
         getTag({
+            destination,
             finish: handler,
             git,
-            name,
-            remote
+            path,
+            remote,
+            errorHandler
         });
     } catch (err) {
         spinner.stop();

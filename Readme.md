@@ -38,8 +38,9 @@ For the use, you need to do the following:
 - `request` - create a pull request
 - `forks` - show the forks for the repository
 - `slack` - send a message to slack hook
-- `tag` - create a tag in remote
+- `tag` - create a tag in remote based on the *package.json* version
 - `version-update` - Update the version in the *package.json*
+- `lib-update` - Update the version in the *package.json* dependency of parent app
 
 ## Examples of use
 
@@ -47,7 +48,7 @@ For the use, you need to do the following:
 - `push full -j <code> -m <message> -n <version>`
 - `push version-update -n <version> -p <path> -j <code>`
 - `push lib-update -n <version> -j <code> -t <feature>`
-- `push tag -n <tagname>`
+- `push tag`
 
 ## Requirements
 
