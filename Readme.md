@@ -35,7 +35,7 @@ For the use, you need to do the following:
 ## Available Commands
 
 - `full` - push, pull-request and slack notification
-- `pr` - create a pull request
+- `pr` - push, create a pull request and slack notification
 - `forks` - show the forks for the repository
 - `slack` - send a message to slack hook
 - `tag` - create a tag in remote based on the *package.json* version
