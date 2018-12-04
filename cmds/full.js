@@ -1,13 +1,14 @@
 // @vendors
 const ora = require('ora');
-const get = require('lodash/get');
+// const get = require('lodash/get');
 const chalk = require('chalk');
 const simpleGit = require('simple-git');
 // @utils
-const setPullRequest = require('../utils/request');
-const getMessage = require('../utils/hook');
 const getFile = require('../utils/version-update');
 const getLibFile = require('../utils/lib-update');
+// @services
+const getMessage = require('../services/hook');
+const setPullRequest = require('../services/request');
 // @config
 const config = require(appRoot + '/bb-pr-config.json');
 const error = require('../utils/error');
@@ -39,7 +40,8 @@ module.exports = async (args) => {
         const git = simpleGit(path);
         const gitParent = simpleGit(parentPath);
 
-        let commitHash = null;
+        // TODO: Include for cherry-pick
+        // let commitHash = null;
 
         // Handlers
         const branchLocalHandler = (error, summary) => {
@@ -55,10 +57,16 @@ module.exports = async (args) => {
             }
         }
 
-        const commitHandler = (error, response) => {
+        const commitHandler = (err) => {
+
+            if (err) {
+                error(err, true, spinner);
+            }
+
             console.log(`- Committed files..............`);
 
-            commitHash = get(response, 'commit');
+            // TODO: Include for cherry-pick
+            // commitHash = get(response, 'commit');
 
             getFile({
                 finish: finishRepository,
@@ -108,21 +116,7 @@ module.exports = async (args) => {
                     console.log(`Operation Completed!!!`);
                 }
             } catch (err) {
-                spinner.stop();
-
-                console.log(chalk.red(`Errors:`));
-                console.log(chalk.red(`=======`));
-
-                const data = get(err, 'response.data.errors');
-
-                if (data) {
-                    data.forEach((i) => {
-                        console.log(get(i, 'message'));
-                    });
-                }
-                else {
-                    console.error(err);
-                }
+                error(err, true, spinner);
             }
         };
 
@@ -157,20 +151,6 @@ module.exports = async (args) => {
             });
         }
     } catch (err) {
-        spinner.stop();
-
-        console.log(chalk.red(`Errors:`));
-        console.log(chalk.red(`=======`));
-
-        const data = get(err, 'response.data.errors');
-
-        if (data) {
-            data.forEach((i) => {
-                console.log(get(i, 'message'));
-            });
-        }
-        else {
-            console.error(err);
-        }
+        error(err, true, spinner);
     }
 }

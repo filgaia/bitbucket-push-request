@@ -1,12 +1,12 @@
 // @vendors
 const ora = require('ora');
-const get = require('lodash/get');
 const chalk = require('chalk');
 const simpleGit = require('simple-git');
 // @utils
 const getTag = require('../utils/tag');
-const getMessage = require('../utils/hook');
 const error = require('../utils/error');
+// @services
+const getMessage = require('../services/hook');
 // @config
 const config = require(appRoot + '/bb-pr-config.json')
 
@@ -65,20 +65,6 @@ module.exports = async (args) => {
             errorHandler
         });
     } catch (err) {
-        spinner.stop();
-
-        console.log(chalk.red(`Errors:`));
-        console.log(chalk.red(`=======`));
-
-        const data = get(err, 'response.data.errors');
-
-        if (data) {
-            data.forEach((i) => {
-                console.log(get(i, 'message'));
-            });
-        }
-        else {
-            console.error(err);
-        }
+        error(err, true, spinner);
     }
 }

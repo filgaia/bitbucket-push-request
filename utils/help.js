@@ -3,7 +3,7 @@ module.exports = {
         push [command] <options>
     
         full ............... push, pull-request and slack notification
-        request ............ create a pull request
+        pr ................. create a pull request and do a push
         forks .............. show your forks for the repository
         lib-update ......... Update the dependency in the parent app
         slack .............. test your slack connection
@@ -33,13 +33,14 @@ module.exports = {
         --dest, -d ......... destination branch. by default destination in config file
         --remote, -r ...... name of the remote. By default the config remote`,
 
-    request: `
-        push request <options>
+    pr: `
+        push pr <options>
         
         --jira, -j ......... the jira version
         --message, -m ...... message for the commit and pull request
-        --origin, -o ....... origin branch. By default jira parameter
-        --dest, -d ......... destination branch. by default destination in config file`,
+        --parent, -p ....... determine if use the parent in configuration file
+        --dest, -d ......... destination branch. by default destination in config file
+        --repo, -d ......... repository. by default destination in config file`,
 
     'lib-update': `
         push lib-update <options>

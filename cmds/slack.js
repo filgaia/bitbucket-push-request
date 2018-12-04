@@ -1,7 +1,8 @@
 // @vendors
 const ora = require('ora');
-const getMessage = require('../utils/hook');
 const chalk = require('chalk');
+// @services
+const getMessage = require('../services/hook');
 
 module.exports = async (args) => {
     const message = args.message || args.m || 'Hello World from the app!!';

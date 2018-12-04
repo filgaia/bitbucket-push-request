@@ -30,7 +30,7 @@ module.exports = () => {
             require('./cmds/full')(args)
             break
 
-        case 'request':
+        case 'pr':
             require('./cmds/request')(args)
             break
 

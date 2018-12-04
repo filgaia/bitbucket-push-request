@@ -1,8 +1,10 @@
 // @vendors
 const ora = require('ora');
-const getForks = require('../utils/forks');
+const getForks = require('../services/forks');
 const get = require('lodash/get');
 const chalk = require('chalk');
+// @utils
+const error = require('../utils/error');
 
 module.exports = async () => {
     const spinner = ora().start();
@@ -19,20 +21,6 @@ module.exports = async () => {
             console.log(get(fork, 'project.key'));
         });
     } catch (err) {
-        spinner.stop();
-
-        console.log(chalk.red(`Errors:`));
-        console.log(chalk.red(`=======`));
-
-        const data = get(err, 'response.data.errors');
-
-        if (data) {
-            data.forEach((i) => {
-                console.log(get(i, 'message'));
-            });
-        }
-        else {
-            console.error(err);
-        }
+        error(err, true, spinner);
     }
 }
