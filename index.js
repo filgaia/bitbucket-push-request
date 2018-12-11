@@ -4,7 +4,7 @@ const minimist = require('minimist')
 const error = require('./utils/error')
 // @root
 var path = require('path');
-global.appRoot = path.resolve(__dirname);
+global.appRoot = path.resolve();
 // @config
 try {
     require(appRoot + '/bb-pr-config.json')
