@@ -62,4 +62,3 @@ For the use, you need to do the following:
 ## Requirements
 
 - You need at least *Node 8.0* to run it
-- You need to install `simple-git` along with this lib to use it
