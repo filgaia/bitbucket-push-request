@@ -11,9 +11,18 @@ If you wanna create the **Slack Notification** you can go to the [Webhook Incomi
 
 This app was built for [NodeJS](https://nodejs.org/es/).
 
+## How to install it
+
+`npm i bitbucket-push-request --save-dev`
+
 ## How to run it
 
-`./bin/push`
+- `./bin/push` or
+- Add it to your `package.json` as a `script` like this: 
+`"push": "node node_modules/bitbucket-push-request/bin/push"`
+- Run it from there with `npm run push`
+- Send the commands with the `--` before the commands. Example:
+`npm run push pr -- -j <jira> -m <message>`
 
 ## How to link it
 
@@ -53,3 +62,4 @@ For the use, you need to do the following:
 ## Requirements
 
 - You need at least *Node 8.0* to run it
+- You need to install `simple-git` along with this lib to use it
