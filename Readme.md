@@ -38,7 +38,7 @@ Run `push help`
 
 For the use, you need to do the following:
 
-- Create a copy of the file `bb-pf-config-template.json` and rename it as `bb-pf-config.json`
+- Create a copy of the file `bb-pr-config-template.json` and rename it as `bb-pr-config.json`
 - Fill the values for *authentication* and *bitbucket* repository
 
 ## Available Commands
