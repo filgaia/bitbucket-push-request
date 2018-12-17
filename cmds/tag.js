@@ -29,16 +29,15 @@ module.exports = async (args) => {
 
         const errorHandler = (err) => {
             if (err) {
-                spinner.stop();
-                error(err, true);
+                error(err, true, spinner);
             }
         };
 
-        const handler = async (error) => {
+        const handler = async (err) => {
             spinner.stop();
 
-            if (error) {
-                error(error.error, true);
+            if (err) {
+                error(err.error, true);
             } else {
 
                 const slackMessage = `A new *Tag* for *${config.repository} (${remote})* have been created!`

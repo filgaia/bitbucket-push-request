@@ -7,6 +7,7 @@ const simpleGit = require('simple-git');
 // @utils
 const error = require('../utils/error');
 const help = require('../utils/help');
+const getTag = require('../utils/tag');
 // @services
 const setPullRequest = require('../services/request');
 const getMessage = require('../services/hook');
@@ -17,9 +18,11 @@ module.exports = async (args) => {
     let spinner = ora();
 
     try {
+        const remote = args.remote || args.r || 'upstream';
         const jira = args.jira || args.j;
         const message = args.message || args.m;
         const forked = (args.p || args.parent) !== 'true';
+        const tagDestination = args.t || args.tagDestination || config.destination;
         let repository = args.r || args.repo;
         let destination = args.dest || args.d;
 
@@ -50,11 +53,15 @@ module.exports = async (args) => {
 
         spinner.start();
 
-        const finish = async (err) => {
-
+        const errorHandler = (err) => {
             if (err) {
                 error(err, true, spinner);
             }
+        };
+
+        const finish = async (err) => {
+
+            errorHandler(err, true, spinner);
 
             console.log(`Creating pull-request for branch ${origin}`);
 
@@ -80,7 +87,7 @@ module.exports = async (args) => {
                     }
                 ];
 
-                await getMessage(slackMessage, attachments);
+                // await getMessage(slackMessage, attachments);
 
                 spinner.stop();
 
@@ -90,18 +97,39 @@ module.exports = async (args) => {
             }
         };
 
-        const branchHandler = (err, summary) => {
-            origin = get(summary, 'current');
-
-            if (origin === destination) {
-                spinner.stop();
-
-                error(`Origin cannot be the same as destination`, true);
+        const tagHandler = (err) => {
+            // Don't stop if error with the tag
+            if (err) {
+                error(err, false);
             }
 
             console.log(`Creating push for branch ${origin}`);
 
             git.push(['-u', config.remote, origin], { '--no-verify': null, '--force': null }, finish);
+        }
+
+        const branchHandler = (err, summary) => {
+            origin = get(summary, 'current');
+
+            if (origin === destination) {
+                error(`Origin cannot be the same as destination`, true, spinner);
+            }
+
+            // if we are doing a parent request we check the tag and create it if needed.
+            if (!forked) {
+                console.log('Checking the tag...');
+
+                getTag({
+                    destination: tagDestination,
+                    finish: tagHandler,
+                    git: simpleGit(config.gitPath),
+                    path: config.gitPath,
+                    remote,
+                    errorHandler
+                });
+            }
+
+            tagHandler();
         }
 
         git.branchLocal(branchHandler);
