@@ -127,9 +127,9 @@ module.exports = async (args) => {
                     remote,
                     errorHandler
                 });
+            } else {
+                tagHandler();
             }
-
-            tagHandler();
         }
 
         git.branchLocal(branchHandler);
