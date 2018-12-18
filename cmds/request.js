@@ -87,7 +87,7 @@ module.exports = async (args) => {
                     }
                 ];
 
-                // await getMessage(slackMessage, attachments);
+                await getMessage(slackMessage, attachments);
 
                 spinner.stop();
 
