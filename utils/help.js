@@ -40,7 +40,8 @@ module.exports = {
         --message, -m ...... message for the commit and pull request
         --parent, -p ....... determine if use the parent in configuration file
         --dest, -d ......... destination branch. by default destination in config file
-        --repo, -d ......... repository. by default destination in config file`,
+        --repo, -d ......... repository. by default destination in config file
+        --location, -l ..... the remote. By default upstream`,
 
     'lib-update': `
         push lib-update <options>

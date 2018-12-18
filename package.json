@@ -1,6 +1,6 @@
 {
   "name": "bitbucket-push-request",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Module to create a push, pull request in bitbucket",
   "main": "index.js",
   "scripts": {

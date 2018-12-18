@@ -18,7 +18,7 @@ module.exports = async (args) => {
     let spinner = ora();
 
     try {
-        const remote = args.remote || args.r || 'upstream';
+        const location = args.location || args.l || 'upstream';
         const jira = args.jira || args.j;
         const message = args.message || args.m;
         const forked = (args.p || args.parent) !== 'true';
@@ -100,7 +100,7 @@ module.exports = async (args) => {
         const tagHandler = (err) => {
             // Don't stop if error with the tag
             if (err) {
-                error(err, false);
+                error(get(err, 'error', false));
             }
 
             console.log(`Creating push for branch ${origin}`);
@@ -124,7 +124,7 @@ module.exports = async (args) => {
                     finish: tagHandler,
                     git: simpleGit(config.gitPath),
                     path: config.gitPath,
-                    remote,
+                    remote: location,
                     errorHandler
                 });
             } else {
