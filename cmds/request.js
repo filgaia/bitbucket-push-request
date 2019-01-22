@@ -24,6 +24,7 @@ module.exports = async (args) => {
         const parent = !!args.hasOwnProperty('parent');
         const checkTag = !args.hasOwnProperty('tag');
         const verify = !args.hasOwnProperty('verify');
+        const notify = !args.hasOwnProperty('notify');
         const tagDestination = args.t || args['tag-destination'] || config.destination;
         let repository = args.r || args.repo;
         let destination = args.dest || args.d;
@@ -82,8 +83,6 @@ module.exports = async (args) => {
                     forked: !parent
                 });
 
-                console.log(`Calling the Slack for PR #${response.id}...`);
-
                 const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> have been created!`
                 const attachments = [
                     {
@@ -94,7 +93,11 @@ module.exports = async (args) => {
                     }
                 ];
 
-                await getMessage(slackMessage, attachments);
+                if (notify) {
+                    console.log(`Calling the Slack for PR #${response.id}...`);
+
+                    await getMessage(slackMessage, attachments);
+                }
 
                 spinner.stop();
 
@@ -112,7 +115,7 @@ module.exports = async (args) => {
 
             console.log(`Creating push for branch ${origin}`);
 
-            git.push(['-u', config.remote, origin], { '--no-verify': null, '--force': null }, finish);
+            git.push(['-u', config.remote, origin], pushOptions, finish);
         }
 
         const branchHandler = (err, summary) => {

@@ -43,7 +43,8 @@ module.exports = {
         --repo, -d ......... repository. by default destination in config file
         --location, -l ..... the remote. By default upstream
         --no-tag ........... if send the pr will not check if the tag exists
-        --no-verify ........ is send it will be sended to the push command`,
+        --no-verify ........ if send it will be sended to the push command
+        --no-notify ........ if send it will not call slack`,
 
     'lib-update': `
         push lib-update <options>
