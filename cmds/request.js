@@ -21,19 +21,26 @@ module.exports = async (args) => {
         const location = args.location || args.l || 'upstream';
         const jira = args.jira || args.j;
         const message = args.message || args.m;
-        const forked = (args.p || args.parent) !== 'true';
-        const tagDestination = args.t || args.tagDestination || config.destination;
+        const parent = !!args.hasOwnProperty('parent');
+        const checkTag = !args.hasOwnProperty('tag');
+        const verify = !args.hasOwnProperty('verify');
+        const tagDestination = args.t || args['tag-destination'] || config.destination;
         let repository = args.r || args.repo;
         let destination = args.dest || args.d;
+        let pushOptions = { '--force': null };
 
-        const gitDir = forked ? config.gitPath : config.parentPath;
+        const gitDir = parent ? config.parentPath : config.gitPath;
 
         if (isUndefined(repository)) {
-            repository = forked ? config.repository : config.parentRepo;
+            repository = parent ? config.parentRepo : config.repository;
         }
 
         if (isUndefined(destination)) {
-            destination = forked ? config.destination : config.parentDestination
+            destination = parent ? config.parentDestination : config.destination;
+        }
+
+        if (!verify) {
+            pushOptions['--no-verify'] = null;
         }
 
         const git = simpleGit(gitDir);
@@ -72,7 +79,7 @@ module.exports = async (args) => {
                     message,
                     origin,
                     repository,
-                    forked
+                    forked: !parent
                 });
 
                 console.log(`Calling the Slack for PR #${response.id}...`);
@@ -116,7 +123,7 @@ module.exports = async (args) => {
             }
 
             // if we are doing a parent request we check the tag and create it if needed.
-            if (!forked) {
+            if (parent && checkTag) {
                 console.log('Checking the tag...');
 
                 getTag({

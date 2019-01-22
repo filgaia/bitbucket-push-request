@@ -38,10 +38,12 @@ module.exports = {
         
         --jira, -j ......... the jira version
         --message, -m ...... message for the commit and pull request
-        --parent, -p ....... determine if use the parent in configuration file
+        --parent ........... if send determine if use the parent in configuration file
         --dest, -d ......... destination branch. by default destination in config file
         --repo, -d ......... repository. by default destination in config file
-        --location, -l ..... the remote. By default upstream`,
+        --location, -l ..... the remote. By default upstream
+        --no-tag ........... if send the pr will not check if the tag exists
+        --no-verify ........ is send it will be sended to the push command`,
 
     'lib-update': `
         push lib-update <options>
