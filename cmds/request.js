@@ -115,7 +115,10 @@ module.exports = async (args) => {
 
             console.log(`Creating push for branch ${origin}`);
 
-            git.push(['-u', config.remote, origin], pushOptions, finish);
+            git.outputHandler((command, stdout, stderr) => {
+                stdout.pipe(process.stdout);
+                stderr.pipe(process.stderr);
+            }).push(['-u', config.remote, origin], pushOptions, finish);
         }
 
         const branchHandler = (err, summary) => {
