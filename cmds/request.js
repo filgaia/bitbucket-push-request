@@ -6,7 +6,6 @@ const chalk = require('chalk');
 const simpleGit = require('simple-git');
 // @utils
 const error = require('../utils/error');
-const help = require('../utils/help');
 const getTag = require('../utils/tag');
 // @services
 const setPullRequest = require('../services/request');
@@ -19,8 +18,6 @@ module.exports = async (args) => {
 
     try {
         const location = args.location || args.l || 'upstream';
-        const jira = args.jira || args.j;
-        const message = args.message || args.m;
         const parent = !!args.hasOwnProperty('parent');
         const checkTag = !args.hasOwnProperty('tag');
         const verify = !args.hasOwnProperty('verify');
@@ -46,14 +43,9 @@ module.exports = async (args) => {
 
         const git = simpleGit(gitDir);
 
+        let jira;
+        let message;
         let origin = '';
-
-        // Error exit
-        if (!jira || !message) {
-            console.log(help['request']);
-
-            error(`Not all required params where given!`, true);
-        }
 
         console.log(`\n`);
         console.log(chalk.cyanBright(`Creating pull-request in ${repository}:`));
@@ -61,85 +53,93 @@ module.exports = async (args) => {
 
         spinner.start();
 
-        const errorHandler = (err) => {
-            if (err) {
-                error(err, true, spinner);
-            }
-        };
+        // Get the last commit info
+        git.log(['-1', '--format=%s'], (err, log) => {
+            const logMessage = get(log, 'latest.hash', '').split(' - ');
 
-        const finish = async (err) => {
+            jira = logMessage[0].trim();
+            message = logMessage[1].trim();
 
-            errorHandler(err, true, spinner);
+            const errorHandler = (err) => {
+                if (err) {
+                    error(err, true, spinner);
+                }
+            };
 
-            console.log(`Creating pull-request for branch ${origin}`);
+            const finish = async (err) => {
 
-            try {
-                const response = await setPullRequest({
-                    destination,
-                    jira,
-                    message,
-                    origin,
-                    repository,
-                    forked: !parent
-                });
+                errorHandler(err, true, spinner);
 
-                if (notify) {
-                    console.log(`Calling the Slack for PR #${response.id}...`);
+                console.log(`Creating pull-request for branch ${origin}`);
 
-                    await getMessage({
+                try {
+                    const response = await setPullRequest({
+                        destination,
                         jira,
+                        message,
+                        origin,
                         repository,
-                        id: response.id
+                        forked: !parent
                     });
+
+                    if (notify) {
+                        console.log(`Calling the Slack for PR #${response.id}...`);
+
+                        await getMessage({
+                            jira,
+                            repository,
+                            id: response.id
+                        });
+                    }
+
+                    spinner.stop();
+
+                    console.log(`Operation Completed!!!`);
+                } catch (err) {
+                    error(err, true, spinner);
+                }
+            };
+
+            const tagHandler = (err) => {
+                // Don't stop if error with the tag
+                if (err) {
+                    error(get(err, 'error', false));
                 }
 
-                spinner.stop();
+                console.log(`Creating push for branch ${origin}`);
 
-                console.log(`Operation Completed!!!`);
-            } catch (err) {
-                error(err, true, spinner);
-            }
-        };
-
-        const tagHandler = (err) => {
-            // Don't stop if error with the tag
-            if (err) {
-                error(get(err, 'error', false));
+                git.outputHandler((command, stdout, stderr) => {
+                    stdout.pipe(process.stdout);
+                    stderr.pipe(process.stderr);
+                }).push(['-u', config.remote, origin], pushOptions, finish);
             }
 
-            console.log(`Creating push for branch ${origin}`);
+            const branchHandler = (err, summary) => {
+                origin = get(summary, 'current');
 
-            git.outputHandler((command, stdout, stderr) => {
-                stdout.pipe(process.stdout);
-                stderr.pipe(process.stderr);
-            }).push(['-u', config.remote, origin], pushOptions, finish);
-        }
+                if (origin === destination) {
+                    error(`Origin cannot be the same as destination`, true, spinner);
+                }
 
-        const branchHandler = (err, summary) => {
-            origin = get(summary, 'current');
+                // if we are doing a parent request we check the tag and create it if needed.
+                if (parent && checkTag) {
+                    console.log('Checking the tag...');
 
-            if (origin === destination) {
-                error(`Origin cannot be the same as destination`, true, spinner);
+                    getTag({
+                        destination: tagDestination,
+                        finish: tagHandler,
+                        git: simpleGit(config.gitPath),
+                        path: config.gitPath,
+                        remote: location,
+                        errorHandler
+                    });
+                } else {
+                    tagHandler();
+                }
             }
 
-            // if we are doing a parent request we check the tag and create it if needed.
-            if (parent && checkTag) {
-                console.log('Checking the tag...');
-
-                getTag({
-                    destination: tagDestination,
-                    finish: tagHandler,
-                    git: simpleGit(config.gitPath),
-                    path: config.gitPath,
-                    remote: location,
-                    errorHandler
-                });
-            } else {
-                tagHandler();
-            }
-        }
-
-        git.branchLocal(branchHandler);
+            git.branchLocal(branchHandler);
+        });
     } catch (err) {
         error(err, true, spinner);
     }

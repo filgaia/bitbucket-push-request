@@ -15,8 +15,6 @@ module.exports = {
     full: `
         push full <options>
     
-        --jira, -j ......... the jira version
-        --message, -m ...... message for the commit and pull request
         --dest, -d ......... destination branch. By default destination in config file 
         --branch, -b ....... name of the branch. By default it uses a convention
         --type, -t ......... type of feature to update
@@ -26,9 +24,8 @@ module.exports = {
         push slack <options>
     
         --message, -m ...... message for the commit and pull request
-        --jira, -j ......... (optional) the jira version
-        --repository -r .... (optional) repository used
-        --id -i ............ (optional) id of the PR`,
+        --parent ........... if send determine if use the parent in configuration file
+        --id -i ............ id of the PR`,
 
     tag: `
         push tag <options>
@@ -39,8 +36,6 @@ module.exports = {
     pr: `
         push pr <options>
         
-        --jira, -j ......... the jira version
-        --message, -m ...... message for the commit and pull request
         --parent ........... if send determine if use the parent in configuration file
         --dest, -d ......... destination branch. by default destination in config file
         --repo, -d ......... repository. by default destination in config file
