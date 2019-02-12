@@ -5,7 +5,11 @@ const chalk = require('chalk');
 const getMessage = require('../services/hook');
 
 module.exports = async (args) => {
-    const message = args.message || args.m || 'Hello World from the app!!';
+    const text = args.message || args.m || 'Hello World from the app!!';
+    const jira = args.jira || args.j;
+    const repository = args.r || args.repo;
+    const id = args.id || args.i;
+
     const spinner = ora().start();
 
     try {
@@ -13,7 +17,12 @@ module.exports = async (args) => {
         console.log(chalk.cyanBright(`Testing communication with Slack:`));
         console.log(chalk.cyanBright(`================================`));
 
-        await getMessage(message);
+        await getMessage({
+            text,
+            jira,
+            repository,
+            id
+        });
 
         spinner.stop();
 

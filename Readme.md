@@ -46,7 +46,7 @@ For the use, you need to do the following:
 - `full` - push, pull-request and slack notification
 - `pr` - push, create a pull request and slack notification
 - `forks` - show the forks for the repository
-- `slack` - send a message to slack hook
+- `slack` - send a message to slack hook. You can send the jira you created too!!
 - `tag` - create a tag in remote based on the *package.json* version
 - `version-update` - Update the version in the *package.json*
 - `lib-update` - Update the version in the *package.json* dependency of parent app

@@ -6,11 +6,6 @@ module.exports = (params) => {
     const remote = params.remote;
     const destination = params.destination;
 
-    const path = params.path;
-    const filename = `../${path}/package.json`;
-    const file = require(filename);
-    const tagName = file.version;
-
     const pullHandler = (err) => {
 
         if (err) {
@@ -21,11 +16,11 @@ module.exports = (params) => {
         git.tags((err, summary) => {
             const tagList = get(summary, 'all');
 
-            if (!tagList.find(t => t === tagName)) {
+            if (!tagList.find(t => t === params.tag)) {
                 console.log('Creating tag...');
 
-                git.addTag(tagName, params.errorHandler)
-                    .push(remote, tagName, { '--no-verify': null }, params.finish);
+                git.addTag(params.tag, params.errorHandler)
+                    .push(remote, params.tag, { '--no-verify': null }, params.finish);
             } else {
                 params.finish({ error: 'Tag already exists!' });
             }

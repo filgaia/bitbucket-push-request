@@ -21,6 +21,10 @@ module.exports = async (args) => {
         const gitDir = config.gitPath;
         const git = simpleGit(gitDir);
 
+        const filename = `../${path}/package.json`;
+        const file = require(filename);
+        const tag = file.version;
+
         console.log(`\n`);
         console.log(chalk.cyanBright(`Tag creation:`));
         console.log(chalk.cyanBright(`=============`));
@@ -39,17 +43,10 @@ module.exports = async (args) => {
             if (err) {
                 error(err.error, true);
             } else {
-
-                const slackMessage = `A new *Tag* for *${config.repository} (${remote})* have been created!`
-                const attachments = [
-                    {
-                        footer: config.auth.username,
-                        color: 'good',
-                        title: `${name}`
-                    }
-                ];
-
-                await getMessage(slackMessage, attachments);
+                await getMessage({
+                    tag,
+                    repository: remote
+                });
             }
 
             console.log(`Operation Completed!!!`);

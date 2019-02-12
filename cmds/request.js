@@ -83,20 +83,14 @@ module.exports = async (args) => {
                     forked: !parent
                 });
 
-                const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> have been created!`
-                const attachments = [
-                    {
-                        color: 'good',
-                        footer: config.auth.username,
-                        title: `PR ${repository} #${response.id} - ${jira}`,
-                        title_link: `${config.url}/projects/${config.project}/repos/${repository}/pull-requests/${response.id}/overview`
-                    }
-                ];
-
                 if (notify) {
                     console.log(`Calling the Slack for PR #${response.id}...`);
 
-                    await getMessage(slackMessage, attachments);
+                    await getMessage({
+                        jira,
+                        repository,
+                        id: response.id
+                    });
                 }
 
                 spinner.stop();

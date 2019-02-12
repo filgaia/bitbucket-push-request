@@ -27,7 +27,6 @@ module.exports = async (args) => {
         const path = config.gitPath;
         const parentPath = config.parentPath;
         const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
-        const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> by *${config.auth.username}* have been created!`
         const attachments = [];
 
         // Error exit
@@ -92,16 +91,14 @@ module.exports = async (args) => {
                     forked
                 });
 
-                attachments.push({
-                    color: 'good',
-                    title: `Merge Request #${response.id} - ${repository}`,
-                    title_link: `${config.url}/projects/${config.project}/repos/${repository}/pull-requests/${response.id}/overview`
-                });
-
                 if (parentPath && attachments.length === 2) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    await getMessage(slackMessage, attachments);
+                    await getMessage({
+                        jira,
+                        repository,
+                        id: response.id
+                    });
 
                     spinner.stop();
 
@@ -109,7 +106,11 @@ module.exports = async (args) => {
                 } else if (!parentPath) {
                     console.log(`Calling the Slack for PRs.....`);
 
-                    await getMessage(slackMessage, attachments);
+                    await getMessage({
+                        jira,
+                        repository,
+                        id: response.id
+                    });
 
                     spinner.stop();
 

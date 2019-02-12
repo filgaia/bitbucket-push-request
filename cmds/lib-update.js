@@ -57,16 +57,11 @@ module.exports = async (args) => {
 
                 console.log(`Calling the Slack for PR #${response.id}...`);
 
-                const slackMessage = `A new *PR* for <${config.jira}${jira}|${jira}> by *${config.auth.username}* have been created!`
-                const attachments = [
-                    {
-                        color: 'good',
-                        title: `Merge Request #${response.id} - ${repository}`,
-                        title_link: `${config.url}/projects/${config.project}/repos/${repository}/pull-requests/${response.id}/overview`
-                    }
-                ];
-
-                await getMessage(slackMessage, attachments);
+                await getMessage({
+                    jira,
+                    repository,
+                    id: response.id
+                });
 
                 // Slack Notification
 

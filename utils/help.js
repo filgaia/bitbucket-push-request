@@ -25,7 +25,10 @@ module.exports = {
     slack: `
         push slack <options>
     
-        --message, -m ...... message for the commit and pull request`,
+        --message, -m ...... message for the commit and pull request
+        --jira, -j ......... (optional) the jira version
+        --repository -r .... (optional) repository used
+        --id -i ............ (optional) id of the PR`,
 
     tag: `
         push tag <options>
