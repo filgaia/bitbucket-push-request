@@ -2,7 +2,7 @@
 const ora = require('ora');
 const get = require('lodash/get');
 const chalk = require('chalk');
-const simpleGit = require('simple-git');
+const simpleGit = require('simple-git/promise');
 // @utils
 const getFile = require('../utils/version-update');
 const getLibFile = require('../utils/lib-update');
@@ -14,6 +14,46 @@ const config = require(appRoot + '/bb-pr-config.json');
 const error = require('../utils/error');
 const help = require('../utils/help');
 
+const checkParams = (version) => {
+    if (!version) {
+        console.log(help['full']);
+
+        error(`Not all required params where given!`, true);
+    }
+};
+
+const getTitle = () => {
+    console.log(`\n`);
+    console.log(chalk.cyanBright(`Creating a full push:`));
+    console.log(chalk.cyanBright(`=====================`));
+};
+
+const finish = async (params) => {
+    console.log(`- Pushed changes ${params.repository}..............`);
+
+    try {
+        const response = await setPullRequest({
+            destination: params.destination,
+            jira: params.jira,
+            message: params.message
+        });
+
+        console.log(`Calling the Slack for PRs.....`);
+
+        await getMessage({
+            jira: params.jira,
+            repository: params.repository,
+            id: response.id
+        });
+
+        params.spinner.stop();
+
+        console.log(`Operation Completed!!!`);
+    } catch (err) {
+        error(err, true, params.spinner);
+    }
+};
+
 module.exports = async (args) => {
     let spinner = ora();
 
@@ -24,144 +64,86 @@ module.exports = async (args) => {
         const parentDestination = args.parentDestination || args.pd || config.parentDestination;
         const path = config.gitPath;
         const parentPath = config.parentPath;
-        const attachments = [];
 
-        let jira;
-        let message;
-
-        // Error exit
-        if (!version) {
-            console.log(help['full']);
-
-            error(`Not all required params where given!`, true);
-        }
+        checkParams(version);
 
         const git = simpleGit(path);
-        const gitParent = simpleGit(parentPath);
+
+        getTitle();
+        spinner.start();
 
         // Get the last commit info
-        git.log(['-1', '--format=%s'], (err, log) => {
-            const logMessage = get(log, 'latest.hash', '').split(' - ');
+        const log = await git.log(['-1', '--format=%s']);
+        const logMessage = get(log, 'latest.hash', '').split(' - ');
+        const jira = logMessage[0].trim();
+        const message = logMessage[1].trim();
+        const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
 
-            jira = logMessage[0].trim();
-            message = logMessage[1].trim();
+        // TODO: Include for cherry-pick
+        // let commitHash = null;
 
-            const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
+        // Updating the changes for repository
+        const summary = await git.branchLocal();
 
-            // TODO: Include for cherry-pick
-            // let commitHash = null;
+        if (summary.branches[jira]) {
+            await git.branch(['-D', jira]);
+            console.log(`- Deleted local branch ${jira}...`);
+        }
 
-            // Handlers
-            const branchLocalHandler = (error, summary) => {
-                if (summary.branches[jira]) {
-                    git.branch(['-D', jira], () => console.log(`- Deleted local branch ${jira}...`))
-                        .checkoutLocalBranch(jira, () => console.log(`- Checked out branch ${jira}...`))
-                        .add('./*', () => console.log(`- Added the files..............`))
-                        .commit(`${jira} - ${message}`, commitHandler);
-                } else {
-                    git.checkoutLocalBranch(jira, () => console.log(`- Checked out branch ${jira}...`))
-                        .add('./*', () => console.log(`- Added the files..............`))
-                        .commit(`${jira} - ${message}`, commitHandler);
-                }
-            }
+        await git.checkoutLocalBranch(jira);
+        console.log(`- Checked out branch ${jira}...`);
 
-            const commitHandler = (err) => {
+        await git.add('./*');
+        console.log(`- Added the files..............`);
 
-                if (err) {
-                    error(err, true, spinner);
-                }
+        await git.commit(`${jira} - ${message}`);
 
-                console.log(`- Committed files..............`);
+        console.log(`- Committed files..............`);
 
-                // TODO: Include for cherry-pick
-                // commitHash = get(response, 'commit');
+        // TODO: Include for cherry-pick
+        // commitHash = get(response, 'commit');
 
-                getFile({
-                    finish: finishRepository,
-                    git,
-                    jira,
-                    newBranch: false,
-                    path,
-                    push: !!jira,
-                    version
-                });
-            };
+        const finishParams = {
+            destination,
+            forked: true,
+            jira,
+            message,
+            origin: jira,
+            repository: config.repository,
+            spinner
+        };
 
-            const finish = async (dest, origin, repository, forked) => {
-                console.log(`- Pushed changes ${repository}..............`);
-
-                try {
-                    const response = await setPullRequest({
-                        destination: dest,
-                        jira,
-                        message,
-                        origin,
-                        repository,
-                        forked
-                    });
-
-                    if (parentPath && attachments.length === 2) {
-                        console.log(`Calling the Slack for PRs.....`);
-
-                        await getMessage({
-                            jira,
-                            repository,
-                            id: response.id
-                        });
-
-                        spinner.stop();
-
-                        console.log(`Operation Completed!!!`);
-                    } else if (!parentPath) {
-                        console.log(`Calling the Slack for PRs.....`);
-
-                        await getMessage({
-                            jira,
-                            repository,
-                            id: response.id
-                        });
-
-                        spinner.stop();
-
-                        console.log(`Operation Completed!!!`);
-                    }
-                } catch (err) {
-                    error(err, true, spinner);
-                }
-            };
-
-            const finishRepository = () => {
-                finish(destination, jira, config.repository, true);
-            };
-
-            const finishParent = () => {
-                finish(parentDestination, parentBranch, config.parentRepo, false);
-            };
-
-            console.log(`\n`);
-            console.log(chalk.cyanBright(`Creating a full push:`));
-            console.log(chalk.cyanBright(`=====================`));
-
-            spinner.start();
-
-            // Updating the changes for repository
-            git.branchLocal(branchLocalHandler);
-
-            // Updating the changes for parent
-            if (parentPath) {
-                getLibFile({
-                    finish: finishParent,
-                    branch: parentBranch,
-                    git: gitParent,
-                    jira,
-                    message,
-                    path: parentPath,
-                    type,
-                    version
-                });
-            }
+        getFile({
+            finish: () => finish(finishParams),
+            git,
+            jira,
+            newBranch: false,
+            path,
+            push: !!jira,
+            version
         });
+
+        // Updating the changes for parent
+        if (parentPath) {
+            const parentParams = {
+                destination: parentDestination,
+                forked: false,
+                jira,
+                message,
+                origin: parentBranch,
+                repository: config.parentRepo,
+                spinner
+            };
+
+            getLibFile({
+                finish: () => finish(parentParams),
+                branch: parentBranch,
+                jira,
+                message,
+                version
+            });
+        }
     } catch (err) {
         error(err, true, spinner);
     }
-}
+};

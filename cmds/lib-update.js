@@ -1,8 +1,6 @@
 // @vendors
 const ora = require('ora');
-const get = require('lodash/get');
 const chalk = require('chalk');
-const simpleGit = require('simple-git');
 // @utils
 const getLibFile = require('../utils/lib-update');
 const error = require('../utils/error');
@@ -11,7 +9,54 @@ const help = require('../utils/help');
 const setPullRequest = require('../services/request');
 const getMessage = require('../services/hook');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
+
+const callSlack = async (params) => {
+    console.log(`Calling the Slack for PR #${params.id}...`);
+    await getMessage(params);
+};
+
+const finish = async (params) => {
+    console.log(`- Pushed files..............`);
+
+    try {
+        // Pull Request
+        const response = await setPullRequest({
+            destination: params.destination,
+            forked: false,
+            jira: params.jira,
+            message: params.message,
+            origin: params.branch,
+            repository: params.repository
+        });
+
+        await callSlack({
+            id: response.id,
+            jira: params.jira,
+            repository: params.repository
+        });
+
+        params.spinner.stop();
+
+        console.log(`Operation Completed!!!`);
+    } catch (err) {
+        error(err, true, params.spinner);
+    }
+};
+
+const getTitle = () => {
+    console.log(`\n`);
+    console.log(chalk.cyanBright(`Library update:`));
+    console.log(chalk.cyanBright(`===============`));
+};
+
+const chreckParams = (version, jira) => {
+    if (!version || !jira) {
+        console.log(help['lib-update']);
+
+        error(`Not all required params where given!`, true);
+    }
+};
 
 module.exports = async (args) => {
     let spinner = ora();
@@ -23,71 +68,25 @@ module.exports = async (args) => {
         const destination = args.dest || args.d || config.parentDestination;
         const branch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
         const repository = config.parentRepo;
-        const path = config.parentPath;
         const message = `Update ${config.repository} version`;
 
-        // Error exit
-        if (!version || !jira) {
-            console.log(help['lib-update']);
+        chreckParams(version, jira);
 
-            error(`Not all required params where given!`, true);
-        }
-
-        const git = simpleGit(path);
-
-        console.log(`\n`);
-        console.log(chalk.cyanBright(`Library update:`));
-        console.log(chalk.cyanBright(`===============`));
-
+        getTitle();
         spinner.start();
 
-        const handler = async (error) => {
-            console.log(`- Pushed files..............`);
-
-            try {
-                // Pull Request
-                const response = await setPullRequest({
-                    message,
-                    destination,
-                    repository,
-                    jira,
-                    origin: branch,
-                    forked: false
-                });
-
-                console.log(`Calling the Slack for PR #${response.id}...`);
-
-                await getMessage({
-                    jira,
-                    repository,
-                    id: response.id
-                });
-
-                // Slack Notification
-
-                spinner.stop();
-
-                if (error) {
-                    error(get(error, 'error'), true);
-                }
-
-                console.log(`Operation Completed!!!`);
-            } catch (err) {
-                error(err, true, spinner);
-            }
-        }
-
         getLibFile({
-            finish: handler,
             branch,
-            git,
+            destination,
+            finish,
             jira,
             message,
-            path,
+            repository,
+            spinner,
             type,
             version
         });
     } catch (err) {
         error(err, true, spinner);
     }
-}
+};

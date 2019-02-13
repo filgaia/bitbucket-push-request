@@ -1,37 +1,40 @@
 // @vendors
 const get = require('lodash/get');
+const simpleGit = require('simple-git/promise');
+// @config
+const config = require(appRoot + '/bb-pr-config.json');
+// @utils
+const error = require('../utils/error');
 
-module.exports = (params) => {
-    const git = params.git;
-    const remote = params.remote;
-    const destination = params.destination;
+module.exports = async (params) => {
+    const gitDir = config.gitPath;
+    const git = simpleGit(gitDir);
+    const file = require(`../${gitDir}/package.json`);
+    let tag = params.tag || file.version;
 
-    const pullHandler = (err) => {
+    try {
+        const status = await git.status();
 
-        if (err) {
-            params.errorHandler(err);
+        if (status.current !== params.destination) {
+            await git.checkout(params.destination);
         }
 
-        // Check if tag exists
-        git.tags((err, summary) => {
-            const tagList = get(summary, 'all');
+        await git.pull(params.remote, params.destination, { '--rebase': null });
 
-            if (!tagList.find(t => t === params.tag)) {
-                console.log('Creating tag...');
+        const summary = await git.tags();
+        const tagList = get(summary, 'all');
 
-                git.addTag(params.tag, params.errorHandler)
-                    .push(remote, params.tag, { '--no-verify': null }, params.finish);
-            } else {
-                params.finish({ error: 'Tag already exists!' });
-            }
-        });
-    }
-    git.status((err, summary) => {
-        if (summary.current === destination) {
-            git.pull(remote, destination, { '--rebase': null }, pullHandler);
+        if (!tagList.find(t => t === tag)) {
+            console.log('Creating tag...');
+            await git.addTag(tag);
+            await git.push(params.remote, tag, { '--no-verify': null });
         } else {
-            git.checkout(destination)
-                .pull(remote, destination, { '--rebase': null }, pullHandler);
+            tag = null;
+            error('Tag already exists!', false);
         }
-    });
-}
+
+        return tag;
+    } catch (response) {
+        error(response, true, params.spinner);
+    }
+};

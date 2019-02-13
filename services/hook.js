@@ -3,7 +3,7 @@ const axios = require('axios');
 const get = require('lodash/get');
 const chalk = require('chalk');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
 
 module.exports = async (params) => {
     const data = {};
@@ -42,4 +42,4 @@ module.exports = async (params) => {
     } else {
         console.error(chalk.red('There is no Slack Hook defined'));
     }
-}
+};

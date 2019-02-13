@@ -1,66 +1,49 @@
 // @vendors
 const ora = require('ora');
 const chalk = require('chalk');
-const simpleGit = require('simple-git');
 // @utils
 const getTag = require('../utils/tag');
 const error = require('../utils/error');
 // @services
 const getMessage = require('../services/hook');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
+
+const getTitle = () => {
+    console.log(`\n`);
+    console.log(chalk.cyanBright(`Tag creation:`));
+    console.log(chalk.cyanBright(`=============`));
+};
 
 module.exports = async (args) => {
     let spinner = ora();
 
+    const remote = args.remote || args.r || 'upstream';
+    const destination = args.dest || args.d || config.destination;
+    let tag = args.tag || args.t;
+
+    getTitle();
+    spinner.start();
+
     try {
-        const remote = args.remote || args.r || 'upstream';
-        const destination = args.dest || args.d || config.destination;
-        const path = config.gitPath;
+        tag = await getTag({
+            destination,
+            remote,
+            spinner,
+            tag
+        });
 
-        const gitDir = config.gitPath;
-        const git = simpleGit(gitDir);
-
-        const filename = `../${path}/package.json`;
-        const file = require(filename);
-        const tag = file.version;
-
-        console.log(`\n`);
-        console.log(chalk.cyanBright(`Tag creation:`));
-        console.log(chalk.cyanBright(`=============`));
-
-        spinner.start();
-
-        const errorHandler = (err) => {
-            if (err) {
-                error(err, true, spinner);
-            }
-        };
-
-        const handler = async (err) => {
-            spinner.stop();
-
-            if (err) {
-                error(err.error, true);
-            } else {
-                await getMessage({
-                    tag,
-                    repository: remote
-                });
-            }
-
-            console.log(`Operation Completed!!!`);
+        if (tag) {
+            await getMessage({
+                tag,
+                repository: remote
+            });
         }
 
-        getTag({
-            destination,
-            finish: handler,
-            git,
-            path,
-            remote,
-            errorHandler
-        });
-    } catch (err) {
-        error(err, true, spinner);
+        spinner.stop();
+    } catch (response) {
+        error(response, true, spinner);
     }
-}
+
+    console.log(`Operation Completed!!!`);
+};

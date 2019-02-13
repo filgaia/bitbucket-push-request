@@ -13,10 +13,9 @@ module.exports = (message, exit, spinner) => {
         data.forEach((i) => {
             console.log(chalk.red(get(i, 'message')));
         });
-    }
-    else {
+    } else {
         console.error(chalk.red(message));
     }
 
     exit && process.exit(1);
-}
+};

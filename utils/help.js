@@ -31,7 +31,8 @@ module.exports = {
         push tag <options>
     
         --dest, -d ......... destination branch. by default destination in config file
-        --remote, -r ...... name of the remote. By default the config remote`,
+        --remote, -r ...... name of the remote. By default the config remote
+        --tag, -t ......... tag to create. By default the version of the package.json`,
 
     pr: `
         push pr <options>
@@ -40,7 +41,7 @@ module.exports = {
         --dest, -d ......... destination branch. by default destination in config file
         --repo, -d ......... repository. by default destination in config file
         --location, -l ..... the remote. By default upstream
-        --no-tag ........... if send the pr will not check if the tag exists
+        --check-tag ........ if send the pr will check if the tag exists
         --no-verify ........ if send it will be sended to the push command
         --no-notify ........ if send it will not call slack`,
 
@@ -59,4 +60,4 @@ module.exports = {
         --jira, -j ......... the jira version
         --path, -p ......... path of file. By default gitPath in config file
         --newVersion, -n ... new version for the file`
-}
+};

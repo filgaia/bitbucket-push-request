@@ -12,6 +12,8 @@ module.exports = {
     },
     "rules": {
         "no-console": 0,
-        "no-unused-vars": 1
+        "no-unused-vars": 1,
+        "semi": ["error", "always"],
+        "eol-last": ["error", "always"]
     }
 };

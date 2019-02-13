@@ -7,15 +7,18 @@ const chalk = require('chalk');
 const error = require('../utils/error');
 
 module.exports = async () => {
-    const spinner = ora().start();
+    const spinner = ora();
 
     try {
-        const forks = await getForks();
-
-        spinner.stop();
         console.log(`\n`);
         console.log(chalk.cyanBright(`Current forks in ok-loans:`));
         console.log(chalk.cyanBright(`==========================`));
+
+        spinner.start();
+
+        const forks = await getForks();
+
+        spinner.stop();
 
         forks.forEach((fork) => {
             console.log(get(fork, 'project.key'));
@@ -23,4 +26,4 @@ module.exports = async () => {
     } catch (err) {
         error(err, true, spinner);
     }
-}
+};

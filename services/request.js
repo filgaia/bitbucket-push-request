@@ -1,25 +1,25 @@
 // @vendors
 const axios = require('axios');
 // @config
-const config = require(appRoot + '/bb-pr-config.json')
+const config = require(appRoot + '/bb-pr-config.json');
 
 module.exports = async (params) => {
     const destination = params.destination;
     const repository = params.repository || config.repository;
-    const fromProject = params.forked ? config.fork : config.project
+    const fromProject = params.forked ? config.fork : config.project;
 
     const results = await axios({
         method: 'post',
-        url: config.url + '/rest/api/1.0/projects/' + config.project + '/repos/' + repository + '/pull-requests',
+        url: `${config.url}/rest/api/1.0/projects/${config.project}/repos/${repository}/pull-requests`,
         auth: config.auth,
         data: {
-            title: params.jira + ' - ' + params.message,
-            description: 'Jira: ' + config.jira + params.jira,
+            title: `${params.jira} - ${params.message}`,
+            description: `Jira: ${config.jira + params.jira}`,
             state: 'OPEN',
             open: true,
             closed: false,
             fromRef: {
-                id: "refs/heads/" + params.origin,
+                id: `refs/heads/${params.origin}`,
                 repository: {
                     slug: repository,
                     name: null,
@@ -29,7 +29,7 @@ module.exports = async (params) => {
                 }
             },
             toRef: {
-                id: "refs/heads/" + destination,
+                id: `refs/heads/${destination}`,
                 repository: {
                     slug: repository,
                     name: null,
@@ -44,4 +44,4 @@ module.exports = async (params) => {
     });
 
     return results.data;
-}
+};
