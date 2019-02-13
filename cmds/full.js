@@ -28,6 +28,42 @@ const getTitle = () => {
     console.log(chalk.cyanBright(`=====================`));
 };
 
+const getCommit = async (args) => {
+    const type = args.type || args.t || config.parentType;
+    const git = simpleGit(config.gitPath);
+    const log = await git.log(['-1', '--format=%s']);
+    const logMessage = get(log, 'latest.hash', '').split(' - ');
+    const jira = logMessage[0].trim();
+    const message = logMessage[1].trim();
+    const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
+
+    return {
+        jira,
+        message,
+        parentBranch
+    };
+};
+
+const updateRepo = async (commit) => {
+    const git = simpleGit(config.gitPath);
+    const summary = await git.branchLocal();
+
+    if (summary.branches[commit.jira]) {
+        await git.branch(['-D', commit.jira]);
+        console.log(`- Deleted local branch ${commit.jira}...`);
+    }
+
+    await git.checkoutLocalBranch(commit.jira);
+    console.log(`- Checked out branch ${commit.jira}...`);
+
+    await git.add('./*');
+    console.log(`- Added the files..............`);
+
+    await git.commit(`${commit.jira} - ${commit.message}`);
+
+    console.log(`- Committed files..............`);
+};
+
 const finish = async (params) => {
     console.log(`- Pushed changes ${params.repository}..............`);
 
@@ -59,7 +95,6 @@ module.exports = async (args) => {
 
     try {
         const version = args.newVersion || args.n;
-        const type = args.type || args.t || config.parentType;
         const destination = args.dest || args.d || config.destination;
         const parentDestination = args.parentDestination || args.pd || config.parentDestination;
         const path = config.gitPath;
@@ -67,59 +102,34 @@ module.exports = async (args) => {
 
         checkParams(version);
 
-        const git = simpleGit(path);
-
         getTitle();
         spinner.start();
 
         // Get the last commit info
-        const log = await git.log(['-1', '--format=%s']);
-        const logMessage = get(log, 'latest.hash', '').split(' - ');
-        const jira = logMessage[0].trim();
-        const message = logMessage[1].trim();
-        const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
+        const commit = await getCommit(args);
 
         // TODO: Include for cherry-pick
-        // let commitHash = null;
+        // const commitHash = get(response, 'commit');
 
         // Updating the changes for repository
-        const summary = await git.branchLocal();
-
-        if (summary.branches[jira]) {
-            await git.branch(['-D', jira]);
-            console.log(`- Deleted local branch ${jira}...`);
-        }
-
-        await git.checkoutLocalBranch(jira);
-        console.log(`- Checked out branch ${jira}...`);
-
-        await git.add('./*');
-        console.log(`- Added the files..............`);
-
-        await git.commit(`${jira} - ${message}`);
-
-        console.log(`- Committed files..............`);
-
-        // TODO: Include for cherry-pick
-        // commitHash = get(response, 'commit');
+        await updateRepo(commit);
 
         const finishParams = {
             destination,
             forked: true,
-            jira,
-            message,
-            origin: jira,
+            jira: commit.jira,
+            message: commit.message,
+            origin: commit.jira,
             repository: config.repository,
             spinner
         };
 
         getFile({
             finish: () => finish(finishParams),
-            git,
-            jira,
+            jira: commit.jira,
             newBranch: false,
             path,
-            push: !!jira,
+            push: !!commit.jira,
             version
         });
 
@@ -128,18 +138,18 @@ module.exports = async (args) => {
             const parentParams = {
                 destination: parentDestination,
                 forked: false,
-                jira,
-                message,
-                origin: parentBranch,
+                jira: commit.jira,
+                message: commit.message,
+                origin: commit.parentBranch,
                 repository: config.parentRepo,
                 spinner
             };
 
             getLibFile({
                 finish: () => finish(parentParams),
-                branch: parentBranch,
-                jira,
-                message,
+                branch: commit.parentBranch,
+                jira: commit.jira,
+                message: commit.message,
                 version
             });
         }
