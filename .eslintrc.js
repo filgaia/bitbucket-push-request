@@ -14,6 +14,20 @@ module.exports = {
         "no-console": 0,
         "no-unused-vars": 1,
         "semi": ["error", "always"],
-        "eol-last": ["error", "always"]
+        "eol-last": ["error", "always"],
+        "indent": [
+            "error",
+            4,
+            { "SwitchCase": 1 }
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            { "allowTemplateLiterals": true }
+        ]
     }
 };
