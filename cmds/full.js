@@ -78,6 +78,7 @@ const finish = async (params) => {
 
         await getMessage({
             jira: params.jira,
+            destination: params.destination,
             repository: params.repository,
             id: response.id
         });
@@ -119,7 +120,6 @@ module.exports = async (args) => {
             forked: true,
             jira: commit.jira,
             title: commit.title,
-            origin: commit.jira,
             repository: config.repository,
             spinner
         };

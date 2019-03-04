@@ -120,6 +120,7 @@ module.exports = async (args) => {
 
         await callSlack({
             jira: commit.jira,
+            destination,
             repository: repository,
             id: response.id
         }, notify);

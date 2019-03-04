@@ -14,7 +14,7 @@ module.exports = async (params) => {
             {
                 color: 'good',
                 footer: config.auth.username,
-                title: `PR ${params.repository} #${params.id} - ${params.jira}`,
+                title: `PR ${params.repository}/${params.destination} #${params.id} - ${params.jira}`,
                 title_link: `${config.url}/projects/${config.project}/repos/${params.repository}/pull-requests/${params.id}/overview`
             }
         ];

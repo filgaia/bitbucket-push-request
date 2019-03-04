@@ -10,10 +10,8 @@ const config = require(appRoot + '/bb-pr-config.json');
 
 const getCommit = async (parent, id, spinner) => {
     let jira;
-    let repository;
-
-    repository = parent ? config.parentRepo : config.repository;
-
+    const destination = parent ? config.parentDestination : config.destination;
+    const repository = parent ? config.parentRepo : config.repository;
     const gitDir = parent ? config.parentPath : config.gitPath;
 
     try {
@@ -21,10 +19,10 @@ const getCommit = async (parent, id, spinner) => {
 
         const log = await git.log(['-1', '--format=%s']);
         const logMessage = get(log, 'latest.hash', '').split(' - ');
-
         jira = get(logMessage, '0', '').trim();
 
         await getMessage({
+            destination,
             jira,
             repository,
             id

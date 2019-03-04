@@ -33,6 +33,7 @@ const finish = async (params) => {
         await callSlack({
             id: response.id,
             jira: params.jira,
+            destination: params.destination,
             repository: params.repository
         });
 
