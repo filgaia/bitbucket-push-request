@@ -32,14 +32,14 @@ const getCommit = async (args) => {
     const type = args.type || args.t || config.parentType;
     const git = simpleGit(config.gitPath);
     const log = await git.log(['-1', '--format=%s']);
-    const logMessage = get(log, 'latest.hash', '').split(' - ');
+    const title = get(log, 'latest.hash', '');
+    const logMessage = title.split(' - ');
     const jira = get(logMessage, '0', config.repository).trim();
-    const message = get(logMessage, '1', '').trim();
     const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
 
     return {
         jira,
-        message,
+        title,
         parentBranch
     };
 };
@@ -59,7 +59,7 @@ const updateRepo = async (commit) => {
     await git.add('./*');
     console.log(`- Added the files..............`);
 
-    await git.commit(`${commit.jira} - ${commit.message}`);
+    await git.commit(`${commit.title}`);
 
     console.log(`- Committed files..............`);
 };
@@ -71,7 +71,7 @@ const finish = async (params) => {
         const response = await setPullRequest({
             destination: params.destination,
             jira: params.jira,
-            message: params.message
+            title: params.title
         });
 
         console.log(`Calling the Slack for PRs.....`);
@@ -118,7 +118,7 @@ module.exports = async (args) => {
             destination,
             forked: true,
             jira: commit.jira,
-            message: commit.message,
+            title: commit.title,
             origin: commit.jira,
             repository: config.repository,
             spinner
@@ -139,7 +139,7 @@ module.exports = async (args) => {
                 destination: parentDestination,
                 forked: false,
                 jira: commit.jira,
-                message: commit.message,
+                title: commit.title,
                 origin: commit.parentBranch,
                 repository: config.parentRepo,
                 spinner
@@ -149,7 +149,7 @@ module.exports = async (args) => {
                 finish: () => finish(parentParams),
                 branch: commit.parentBranch,
                 jira: commit.jira,
-                message: commit.message,
+                title: commit.title,
                 version
             });
         }

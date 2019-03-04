@@ -13,7 +13,7 @@ module.exports = async (params) => {
         url: `${config.url}/rest/api/1.0/projects/${config.project}/repos/${repository}/pull-requests`,
         auth: config.auth,
         data: {
-            title: `${params.jira} - ${params.message}`,
+            title: `${params.title}`,
             description: `Jira: ${config.jira + params.jira}`,
             state: 'OPEN',
             open: true,

@@ -30,7 +30,7 @@ const fileHandler = async (filename, params, err) => {
         await git.add('./*');
         console.log(`- Added the files..............`);
 
-        await git.commit(`${params.jira} - ${params.message}`);
+        await git.commit(`${params.title}`);
         console.log(`- Committed files..............`);
 
         await git.push(['-u', config.remote, params.branch], { '--no-verify': null, '--force': null });

@@ -65,10 +65,8 @@ module.exports = async (args) => {
         const version = args.newVersion || args.n;
         const jira = args.jira || args.j;
         const type = args.type || args.t || config.parentType;
-        const destination = args.dest || args.d || config.parentDestination;
         const branch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
-        const repository = config.parentRepo;
-        const message = `Update ${config.repository} version`;
+        const title = `${jira} - Update ${config.repository} version`;
 
         chreckParams(version, jira);
 
@@ -77,13 +75,9 @@ module.exports = async (args) => {
 
         getLibFile({
             branch,
-            destination,
             finish,
-            jira,
-            message,
-            repository,
+            title,
             spinner,
-            type,
             version
         });
     } catch (err) {
