@@ -22,7 +22,7 @@ const getCommit = async (parent, id, spinner) => {
         const log = await git.log(['-1', '--format=%s']);
         const logMessage = get(log, 'latest.hash', '').split(' - ');
 
-        jira = logMessage[0].trim();
+        jira = get(logMessage, '0', '').trim();
 
         await getMessage({
             jira,

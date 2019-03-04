@@ -33,8 +33,8 @@ const getCommit = async (args) => {
     const git = simpleGit(config.gitPath);
     const log = await git.log(['-1', '--format=%s']);
     const logMessage = get(log, 'latest.hash', '').split(' - ');
-    const jira = logMessage[0].trim();
-    const message = logMessage[1].trim();
+    const jira = get(logMessage, '0', config.repository).trim();
+    const message = get(logMessage, '1', '').trim();
     const parentBranch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
 
     return {

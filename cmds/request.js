@@ -31,8 +31,8 @@ const getCommit = async (params) => {
     const git = simpleGit(params.gitDir);
     const log = await git.log(['-1', '--format=%s']);
     const logMessage = get(log, 'latest.hash', '').split(' - ');
-    const jira = logMessage[0].trim();
-    const message = logMessage[1].trim();
+    const jira = get(logMessage, '0', config.repository).trim();
+    const message = get(logMessage, '1', '').trim();
 
     const summary = await git.branchLocal();
     const origin = get(summary, 'current');
