@@ -63,7 +63,7 @@ module.exports = async (args) => {
     let spinner = ora();
 
     try {
-        const location = args.location || args.l || 'upstream';
+        const location = args.location || args.l || config.remote;
         const parent = !!args.hasOwnProperty('parent');
         const checkTag = args.hasOwnProperty('check-tag');
         const verify = !args.hasOwnProperty('verify');
@@ -84,7 +84,7 @@ module.exports = async (args) => {
             destination = parent ? config.parentDestination : config.destination;
         }
 
-        if (!verify) {
+        if (!verify || parent) {
             pushOptions['--no-verify'] = null;
         }
 

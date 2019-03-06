@@ -18,7 +18,7 @@ const getTitle = () => {
 module.exports = async (args) => {
     let spinner = ora();
 
-    const remote = args.remote || args.r || 'upstream';
+    const remote = args.remote || args.r || config.remote;
     const destination = args.dest || args.d || config.destination;
     let tag = args.tag || args.t;
 
