@@ -41,6 +41,7 @@ module.exports = {
         --dest, -d ......... destination branch. by default destination in config file
         --repo, -d ......... repository. by default destination in config file
         --location, -l ..... the remote. By default config origin
+        --forked ........... The origin is in a fork
         --check-tag ........ if send the pr will check if the tag exists
         --no-verify ........ if send it will be sended to the push command
         --no-notify ........ if send it will not call slack`,

@@ -64,6 +64,7 @@ module.exports = async (args) => {
 
     try {
         const location = args.location || args.l || config.remote;
+        const forked = !!args.hasOwnProperty('forked');
         const parent = !!args.hasOwnProperty('parent');
         const checkTag = args.hasOwnProperty('check-tag');
         const verify = !args.hasOwnProperty('verify');
@@ -115,7 +116,7 @@ module.exports = async (args) => {
             title: commit.title,
             origin: commit.origin,
             repository,
-            forked: !parent
+            forked
         });
 
         await callSlack({
