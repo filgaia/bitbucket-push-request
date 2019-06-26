@@ -2,6 +2,7 @@
 const axios = require('axios');
 const get = require('lodash/get');
 const chalk = require('chalk');
+const email = require('git-user-email');
 // @config
 const config = require(appRoot + '/bb-pr-config.json');
 
@@ -13,7 +14,7 @@ module.exports = async (params) => {
         data.attachments = [
             {
                 color: 'good',
-                footer: config.auth.username,
+                footer: email(),
                 title: `PR ${params.repository}/${params.destination} #${params.id} - ${params.jira}`,
                 title_link: `${config.url}/projects/${config.project}/repos/${params.repository}/pull-requests/${params.id}/overview`
             }
@@ -22,7 +23,7 @@ module.exports = async (params) => {
         data.text = `A new *Tag* for *${config.repository} (${params.repository})* have been created!`;
         data.attachments = [
             {
-                footer: config.auth.username,
+                footer: email(),
                 color: 'good',
                 title: `${params.tag}`
             }

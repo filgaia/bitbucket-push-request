@@ -1,6 +1,5 @@
 {
     "auth": {
-        "username": "<username>",
         "password": "<password>"
     },
     "destination": "master",
