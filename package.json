@@ -1,6 +1,6 @@
 {
     "name": "bitbucket-push-request",
-    "version": "1.9.7",
+    "version": "1.9.8",
     "description": "Module to create a push, pull request in bitbucket",
     "main": "index.js",
     "scripts": {
@@ -22,6 +22,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "chalk": "^2.4.1",
+        "git-user-email": "^0.2.2",
         "lodash": "^4.17.11",
         "minimist": "^1.2.0",
         "ora": "^3.0.0",

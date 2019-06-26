@@ -1,5 +1,7 @@
 // @vendors
 const axios = require('axios');
+const get = require('lodash/get');
+const email = require('git-user-email');
 // @config
 const config = require(appRoot + '/bb-pr-config.json');
 
@@ -11,7 +13,10 @@ module.exports = async (params) => {
     const results = await axios({
         method: 'post',
         url: `${config.url}/rest/api/1.0/projects/${config.project}/repos/${repository}/pull-requests`,
-        auth: config.auth,
+        auth: {
+            username: email(),
+            password: get(config, 'auth.password')
+        },
         data: {
             title: `${params.title}`,
             description: `Jira: ${config.jira + params.jira}`,
