@@ -74,15 +74,15 @@ module.exports = async (args) => {
         let destination = args.dest || args.d;
         let pushOptions = { '--force': null };
 
-        const gitDir = parent ? config.parentPath : config.gitPath;
+        const gitDir = parent ? get(config, 'parent.path') : config.gitPath;
         const git = simpleGit(gitDir);
 
         if (isUndefined(repository)) {
-            repository = parent ? config.parentRepo : config.repository;
+            repository = parent ? get(config, 'parent.repo') : config.repository;
         }
 
         if (isUndefined(destination)) {
-            destination = parent ? config.parentDestination : config.destination;
+            destination = parent ? get(config, 'parent.destination') : config.destination;
         }
 
         if (!verify || parent) {

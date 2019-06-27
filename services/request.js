@@ -44,7 +44,11 @@ module.exports = async (params) => {
                 }
             },
             locked: false,
-            reviewers: config.reviewers
+            reviewers: get(config, 'reviewers', []).map(name => ({
+                user: {
+                    name
+                }
+            }))
         },
     });
 
