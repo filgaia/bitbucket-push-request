@@ -1,6 +1,7 @@
 // @vendors
 const ora = require('ora');
 const chalk = require('chalk');
+const get = require('lodash/get');
 // @utils
 const getLibFile = require('../utils/lib-update');
 const error = require('../utils/error');
@@ -65,7 +66,7 @@ module.exports = async (args) => {
     try {
         const version = args.newVersion || args.n;
         const jira = args.jira || args.j;
-        const type = args.type || args.t || config.parentType;
+        const type = args.type || args.t || get(config, 'parent.type');
         const branch = args.branch || args.b || `${type}/${config.repository}/${jira}/lib-update`;
         const title = `${jira} - Update ${config.repository} version`;
 

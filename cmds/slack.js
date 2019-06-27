@@ -10,9 +10,9 @@ const config = require(appRoot + '/bb-pr-config.json');
 
 const getCommit = async (parent, id, spinner) => {
     let jira;
-    const destination = parent ? config.parentDestination : config.destination;
-    const repository = parent ? config.parentRepo : config.repository;
-    const gitDir = parent ? config.parentPath : config.gitPath;
+    const destination = parent ? get(config, 'parent.destination') : config.destination;
+    const repository = parent ? get(config, 'parent.repo') : config.repository;
+    const gitDir = parent ? get(config, 'parent.path') : config.gitPath;
 
     try {
         const git = simpleGit(gitDir);

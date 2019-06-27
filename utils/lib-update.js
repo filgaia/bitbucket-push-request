@@ -1,5 +1,6 @@
 // @vendors
 var fs = require('fs');
+const get = require('lodash/get');
 const simpleGit = require('simple-git/promise');
 // @utils
 const error = require('../utils/error');
@@ -7,7 +8,7 @@ const error = require('../utils/error');
 const config = require(appRoot + '/bb-pr-config.json');
 
 const fileHandler = async (filename, params, err) => {
-    const path = config.parentPath;
+    const path = get(config, 'parent.path');
     const git = simpleGit(path);
 
     if (err) {
@@ -41,7 +42,7 @@ const fileHandler = async (filename, params, err) => {
 };
 
 module.exports = (params) => {
-    const path = config.parentPath;
+    const path = get(config, 'parent.path');
     const filename = `../${path}/package.json`;
     const file = require(filename);
 

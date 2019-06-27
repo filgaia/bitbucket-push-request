@@ -29,7 +29,7 @@ const getTitle = () => {
 };
 
 const getCommit = async (args) => {
-    const type = args.type || args.t || config.parentType;
+    const type = args.type || args.t || get(config, 'parent.type');
     const git = simpleGit(config.gitPath);
     const log = await git.log(['-1', '--format=%s']);
     const title = get(log, 'latest.hash', '');
@@ -97,9 +97,9 @@ module.exports = async (args) => {
     try {
         const version = args.newVersion || args.n;
         const destination = args.dest || args.d || config.destination;
-        const parentDestination = args.parentDestination || args.pd || config.parentDestination;
+        const parentDestination = args.parentDestination || args.pd || get(config, 'parent.destination');
         const path = config.gitPath;
-        const parentPath = config.parentPath;
+        const parentPath = get(config, 'parent.path');
 
         checkParams(version);
 
@@ -141,7 +141,7 @@ module.exports = async (args) => {
                 jira: commit.jira,
                 title: commit.title,
                 origin: commit.parentBranch,
-                repository: config.parentRepo,
+                repository: get(config, 'parent.repo'),
                 spinner
             };
 
