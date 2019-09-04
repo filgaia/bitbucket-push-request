@@ -1,5 +1,6 @@
 // @vendors
 const ora = require('ora');
+const email = require('git-user-email');
 const get = require('lodash/get');
 const isUndefined = require('lodash/isUndefined');
 const chalk = require('chalk');
@@ -39,6 +40,10 @@ const getCommit = async (params) => {
 
     if (origin === params.destination) {
         error(`Origin cannot be the same as destination`, true, params.spinner);
+    }
+
+    if (email() === '') {
+        error(`Cannot find git email. Set it with 'git config --local user.email'`, true, params.spinner);
     }
 
     // if we are doing a parent request we check the tag and create it if needed.
