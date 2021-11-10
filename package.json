@@ -1,5 +1,5 @@
 {
-    "name": "bitbucket-push-request",
+    "name": "@filgaia/bitbucket-push-request",
     "version": "1.10.1",
     "description": "Module to create a push, pull request in bitbucket",
     "main": "index.js",
@@ -11,10 +11,21 @@
         "git",
         "nodejs"
     ],
-    "author": "Filgaia",
+    "author": {
+        "name": "Filgaia",
+        "email": "alejandroasp@gmail.com"
+    },
     "license": "ISC",
     "bin": {
         "push": "bin/push"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/filgaia/bitbucket-push-request.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/filgaia",
+        "access": "public"
     },
     "devDependencies": {
         "eslint": "^5.9.0"

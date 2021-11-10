@@ -5,6 +5,7 @@ test/coverage/
 .DS_Store
 .vscode
 .vs
+.npmrc
 __tests__/coverage/
 package-lock.json
 bb-pr-config.json
